@@ -3,872 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HORIZON | Premium Gaming Accounts</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    
+    <title>FF ID Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary-green: #6200ff;
-            --light-green: hsl(159, 93%, 51%);
-            --dark-gray: #0680fa;
-            --medium-gray: #34495e;
-            --light-gray: #f5f5f5;
-            --text-dark: #2c3e50;
-            --text-light: #ecf0f1;
-            --accent: #ffa710;
-            --danger: #ffffff;
-            --glow-intensity: 8px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            color: var(--text-light);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOTVoenkxMm1rb2IxZzllNXF1bHgzb2Z3M2I3eTQ3ZTJmODA4aXY1eSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/j52bGrifXj6rIPEn3f/giphy.gif');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.3;
-            z-index: -1;
-        }
-
-        /* Loading Screen */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-
-        .loading-logo {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            color: #07ff5e;
-            text-shadow: 0 0 10px rgba(105, 7, 250, 0.5);
-            animation: glow-pulse 2s ease-in-out infinite alternate;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid var(--light-green);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1.5rem;
-        }
-
-        .loading-text {
-            font-size: 1rem;
-            color: var(--text-light);
-            letter-spacing: 1px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Glowing Effects */
-        .glow-text {
-            text-shadow: 0 0 10px var(--light-green), 0 0 20px var(--light-green);
-            animation: glow-pulse 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow-pulse {
-            from { text-shadow: 0 0 10px var(--light-green), 0 0 20px var(--light-green); }
-            to { text-shadow: 0 0 15px var(--primary-green), 0 0 30px var(--primary-green), 0 0 40px var(--primary-green); }
-        }
-
-        .glow-box {
-            box-shadow: 0 0 var(--glow-intensity) rgba(52, 219, 130, 0.6);
-            transition: box-shadow 0.3s ease, transform 0.3s ease;
-        }
-
-        .glow-box:hover {
-            box-shadow: 0 0 25px rgba(52, 219, 130, 0.8), 0 0 35px rgba(98, 230, 58, 0.4);
-        }
-
-        /* Header Styles */
-        header {
-            padding: 1rem;
-            background: rgba(29, 12, 53, 0.85);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--light-green);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 0 20px rgba(52, 219, 130, 0.3);
-        }
-
-        .logo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .logo h1 {
-            font-size: 1.8rem;
-            color: #ededed;
-            margin-bottom: 0.2rem;
-            letter-spacing: 2px;
-            font-weight: 700;
-            text-shadow: 0 0 10px rgba(71, 71, 72, 0.7);
-        }
-
-        .tagline {
-            font-size: 0.8rem;
-            color: var(--light-green);
-            letter-spacing: 1px;
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        /* Main Content */
-        main {
-            padding: 1rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 1.5rem 0;
-            margin-bottom: 1.5rem;
-        }
-
-        .hero h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--light-gray);
-            line-height: 1.3;
-            text-shadow: 0 0 10px rgba(52, 219, 130, 0.5);
-        }
-
-        .hero p {
-            color: var(--light-green);
-            font-size: 0.9rem;
-            max-width: 600px;
-            margin: 0 auto;
-            text-shadow: 0 0 5px rgba(52, 219, 130, 0.5);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 5px;
-        }
-
-        .tab {
-            padding: 0.7rem 1.2rem;
-            background: transparent;
-            border: none;
-            color: var(--text-light);
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s ease;
-            opacity: 0.7;
-            flex-shrink: 0;
-        }
-
-        .tab.active {
-            opacity: 1;
-            color: var(--light-green);
-            text-shadow: 0 0 8px rgba(52, 219, 130, 0.7);
-        }
-
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--light-green);
-            border-radius: 3px 3px 0 0;
-            box-shadow: 0 0 8px var(--light-green);
-        }
-
-        /* Account Cards Grid */
-        .accounts-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        /* 3D Card Effects */
-        .account-card {
-            background: rgba(132, 42, 242, 0.7);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: transform 0.5s ease, box-shadow 0.3s ease;
-            position: relative;
-            border: 1px solid rgba(125, 27, 237, 0.5);
-            backdrop-filter: blur(5px);
-            transform-style: preserve-3d;
-            perspective: 1000px;
-            animation: fadeInUp 0.6s ease-out;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(52, 219, 130, 0.3);
-        }
-
-        .account-card:hover {
-            transform: translateY(-10px) rotateX(5deg) rotateY(5deg) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 25px rgba(52, 219, 130, 0.5);
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .account-card.featured::before {
-            content: 'FEATURED';
-            position: absolute;
-            top: 10px;
-            right: -25px;
-            background: var(--accent);
-            color: var(--text-dark);
-            padding: 5px 25px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            transform: rotate(45deg);
-            z-index: 2;
-            box-shadow: 0 0 10px rgba(255, 175, 16, 0.7);
-        }
-
-        /* Stagger animation for grid items */
-        .accounts-grid .account-card:nth-child(1) { animation-delay: 0.1s; }
-
-        /* Image Carousel */
-        .carousel {
-            position: relative;
-            height: 160px;
-            overflow: hidden;
-        }
-
-        .carousel-inner {
-            display: flex;
-            transition: transform 0.5s ease;
-            height: 100%;
-        }
-
-        .carousel-item {
-            min-width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .carousel-control {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1;
-            opacity: 0.7;
-            transition: all 0.3s ease;
-        }
-
-        .carousel-control:hover {
-            opacity: 1;
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        .carousel-control.prev {
-            left: 8px;
-        }
-
-        .carousel-control.next {
-            right: 8px;
-        }
-
-        .carousel-indicators {
-            position: absolute;
-            bottom: 8px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .indicator {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .indicator.active {
-            background: white;
-            transform: scale(1.2);
-            box-shadow: 0 0 5px white;
-        }
-
-        .card-header {
-            padding: 0.9rem;
-            border-bottom: 1px solid rgba(60, 236, 6, 0.5);
-        }
-
-        .card-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .account-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .price {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--light-green);
-            text-shadow: 0 0 5px rgba(98, 230, 58, 0.7);
-        }
-
-        .account-id {
-            font-size: 0.8rem;
-            color: var(--light-green);
-            margin-bottom: 0.5rem;
-        }
-
-        .badges {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            font-size: 0.65rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 20px;
-            font-weight: 600;
-            box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-        }
-
-        .badge.instant {
-            background: rgba(8, 148, 242, 0.2);
-            color: var(--light-green);
-            border: 1px solid var(--light-green);
-        }
-
-        .badge.verified {
-            background: rgba(4, 205, 232, 0.2);
-            color: var(--accent);
-            border: 1px solid var(--accent);
-        }
-
-        .badge.rare {
-            background: rgba(135, 15, 241, 0.2);
-            color: #0fc0f1;
-            border: 1px solid #f1c40f;
-        }
-
-        .card-body {
-            padding: 0.9rem;
-        }
-
-        .description {
-            color: var(--light-gray);
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
-            line-height: 1.4;
-        }
-
-        .urgency {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--danger);
-            font-size: 0.75rem;
-            margin-bottom: 1rem;
-            text-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
-        }
-
-        /* 3D Button Effects */
-        .buy-btn {
-            display: block;
-            width: 100%;
-            padding: 0.8rem;
-            background: var(--light-green);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            text-decoration: none;
-            position: relative;
-            transform-style: preserve-3d;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2), 0 0 10px rgba(52, 219, 130, 0.5);
-        }
-
-        .buy-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .buy-btn:hover {
-            background: var(--primary-green);
-            transform: scale(1.03) translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(52, 219, 130, 0.7);
-        }
-
-        .buy-btn:hover::before {
-            left: 100%;
-        }
-
-        .buy-btn:active {
-            transform: translateY(2px) scale(0.98);
-        }
-
-        /* Floating WhatsApp Button */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1rem;
-            width: 55px;
-            height: 55px;
-            background: #25D366;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
-            z-index: 1000;
-            animation: float 3s ease-in-out infinite;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .whatsapp-float:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.7);
-        }
-
-        .whatsapp-float i {
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-8px);
-            }
-            100% {
-                transform: translateY(0);
-            }
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 1.5rem 1rem;
-            color: var(--light-green);
-            font-size: 0.8rem;
-            border-top: 1px solid rgba(65, 255, 2, 0.3);
-            margin-top: 1.5rem;
-            text-shadow: 0 0 5px rgba(52, 219, 130, 0.5);
-        }
-
-        /* Buy Page Styles */
-        .buy-page {
-            display: none;
-            padding: 1rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--light-green);
-            text-decoration: none;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-            padding: 0.5rem 0;
-            transition: all 0.3s ease;
-            text-shadow: 0 0 5px rgba(52, 219, 130, 0.5);
-        }
-
-        .back-btn:hover {
-            transform: translateX(-5px);
-        }
-
-        .account-details {
-            background: rgba(155, 40, 243, 0.7);
-            border-radius: 12px;
-            padding: 1.2rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(30, 255, 10, 0.1);
-            backdrop-filter: blur(5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(52, 219, 130, 0.3);
-            transform-style: preserve-3d;
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(110, 255, 7, 0.3);
-        }
-
-        .detail-label {
-            color: var(--light-green);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .detail-value {
-            font-weight: 600;
-            color: var(--light-gray);
-            font-size: 0.9rem;
-            text-align: right;
-            max-width: 60%;
-        }
-
-        .detail-value.price {
-            color: var(--light-green);
-            font-size: 1.2rem;
-            text-shadow: 0 0 5px rgba(98, 230, 58, 0.7);
-        }
-
-        .whatsapp-buy-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.8rem;
-            width: 100%;
-            padding: 1rem;
-            background: #25d366;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2), 0 0 10px rgba(37, 211, 102, 0.5);
-            position: relative;
-            transform-style: preserve-3d;
-            overflow: hidden;
-        }
-
-        .whatsapp-buy-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .whatsapp-buy-btn:hover {
-            background: #1da851;
-            transform: scale(1.03) translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(37, 211, 102, 0.7);
-        }
-
-        .whatsapp-buy-btn:hover::before {
-            left: 100%;
-        }
-
-        /* Responsive Adjustments */
-        @media (min-width: 480px) {
-            .accounts-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-            
-            .carousel {
-                height: 180px;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .logo {
-                flex-direction: row;
-                justify-content: center;
-                gap: 1rem;
-            }
-            
-            .logo h1 {
-                margin-bottom: 0;
-                font-size: 2.2rem;
-            }
-            
-            .tagline {
-                font-size: 0.9rem;
-            }
-            
-            .hero h2 {
-                font-size: 2rem;
-            }
-            
-            .hero p {
-                font-size: 1rem;
-            }
-            
-            .accounts-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: 1.5rem;
-            }
-            
-            .carousel {
-                height: 200px;
-            }
-            
-            .whatsapp-float {
-                width: 60px;
-                height: 60px;
-                bottom: 2rem;
-                right: 1.5rem;
-            }
-            
-            .whatsapp-float i {
-                font-size: 1.8rem;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .accounts-grid {
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            }
-            
-            .whatsapp-float {
-                width: 65px;
-                height: 65px;
-                bottom: 2.5rem;
-                right: 2rem;
-            }
-            
-            .whatsapp-float i {
-                font-size: 2rem;
-            }
-        }
-
-        /* Mobile Optimizations */
-        @media (max-width: 768px) {
-            :root {
-                --glow-intensity: 5px;
-            }
-
-            .tab, .buy-btn {
-                min-height: 44px;
-                padding: 1rem;
-            }
-
-            .hero h2 {
-                font-size: 1.8rem;
-                line-height: 1.2;
-            }
-
-            main {
-                padding: 0.5rem;
-            }
-
-            /* Simplify 3D effects on mobile for performance */
-            .account-card:hover {
-                transform: translateY(-5px) scale(1.01);
-            }
-        }
+        body { background-color: #1a202c; color: white; }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); }
+        .modal-content { background-color: #2d3748; margin: 5% auto; padding: 20px; border: 1px solid #4a5568; width: 95%; max-width: 600px; border-radius: 8px; }
+        .hidden { display: none; }
+        .account-card { cursor: pointer; transition: transform 0.2s; }
+        .account-card:hover { transform: translateY(-5px); }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading-screen">
-        <div class="loading-logo glow-text" style="font-size:2.5rem; font-style:italic; font-weight:bold; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; letter-spacing:2px;">
-            HORIZON
+
+    <!-- AUTH SECTION -->
+    <div id="auth-section" class="max-w-md mx-auto mt-10 p-6 bg-gray-800 rounded-lg">
+        <h2 class="text-2xl font-bold text-center mb-6">Login or Register</h2>
+        <div class="mb-4">
+            <label for="email" class="block mb-2">Email:</label>
+            <input type="email" id="email" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
         </div>
-        <style>
-            @media (max-width: 480px) {
-            .loading-logo {
-                font-size: 2.2rem !important;
-            }
-            }
-            @media (max-width: 350px) {
-            .loading-logo {
-                font-size: 1.5rem !important;
-            }
-            } 
-        </style>
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Loading Premium Accounts...</div>
+        <div class="mb-6">
+            <label for="password" class="block mb-2">Password:</label>
+            <input type="password" id="password" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+        </div>
+        <div class="flex gap-4">
+            <button id="login-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Login</button>
+            <button id="register-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Register</button>
+        </div>
     </div>
 
-    <!-- Home Page -->
-    <div id="home-page">
-        <header>
-            <div class="logo">
-                <h1 class="glow-text" style="font-weight: bold; font-style: italic; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: 2px;">HORIZON</h1>
-                <div class="tagline">
-                    <span>•</span> Fast <span>•</span> Secure <span>•</span> Premium Accounts <span>•</span>
-                </div>
+    <!-- APP SECTION -->
+    <div id="app-section" class="hidden">
+        <header class="bg-gray-800 p-4 flex justify-between items-center sticky top-0 z-50">
+            <div>
+                <h1 class="text-xl font-bold">FF ID Store</h1>
+                <p id="user-email" class="text-sm text-gray-400"></p>
+            </div>
+            <div>
+                <span class="font-bold">Wallet: ₹<span id="wallet-balance">0</span></span>
+                <button id="deposit-btn" class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-1 px-3 rounded ml-4">Deposit</button>
+                <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded ml-2">Logout</button>
             </div>
         </header>
 
-        <main>
-            <section class="hero">
-                <h2 class="glow-text">Buy | Sell Free Fire | PUBG Accounts</h2>
-                <p>Curated premium accounts with instant delivery. Get your dream account today!</p>
-            </section>
-
-            <div class="tabs">
-                <button class="tab active" data-tab="freefire">𒆙 FreeFire ❖</button>
-                <button class="tab" data-tab="pubg">❖ PUBG 𒆙</button>
-            </div>
-
-            <div class="accounts-grid" id="accounts-container">
-                <!-- Accounts will be loaded dynamically from Firebase -->
-            </div>
+        <main id="accounts-container" class="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         </main>
-
-        <footer>
-            <p>Limited drops sell faster. Verified accounts get premium rates.</p>
-        </footer>
-
-        <a href="https://wa.me/919526725376?text=Hi! I want to sell my gaming account can you show me the details." class="whatsapp-float" target="_blank">
-            <i class="fab fa-whatsapp"></i>
-        </a>
     </div>
 
-    <!-- Buy Page -->
-    <div id="buy-page" class="buy-page">
-        <header>
-            <div class="logo">
-                <h1 class="glow-text">HORIZON</h1>
-                <div class="tagline">
-                    <span>•</span> Fast <span>•</span> Secure <span>•</span> Premium Accounts <span>•</span>
-                </div>
-            </div>
-        </header>
-
-        <main>
-            <a href="#" class="back-btn" id="back-btn">
-                <i class="fas fa-arrow-left"></i> Back to Accounts
-            </a>
-
-            <div class="account-details glow-box">
-                <div class="detail-row">
-                    <div class="detail-label">Account Name:</div>
-                    <div class="detail-value" id="detail-name">Dragon Fury</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Account ID:</div>
-                    <div class="detail-value" id="detail-id">FF2024DRGN</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Price:</div>
-                    <div class="detail-value price" id="detail-price">₹1,299</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Description:</div>
-                    <div class="detail-value" id="detail-desc">Elite account with Dragon skin, 15 character slots, and premium weapon skins. Level 70 with 500+ wins.</div>
-                </div>
-            </div>
-
-            <a href="#" class="whatsapp-buy-btn" id="whatsapp-buy-btn" target="_blank">
-                <i class="fab fa-whatsapp"></i> Buy on WhatsApp
-            </a>
-        </main>
-
-        <a href="https://wa.me/919526725376?text=Hi! I want to sell my gaming account can you give the details." class="whatsapp-float" target="_blank">
-            <i class="fab fa-whatsapp"></i>
-        </a>
+    <!-- DEPOSIT MODAL -->
+    <div id="deposit-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Deposit Money</h3>
+            <p class="mb-4">Scan the QR code to pay. After paying, fill the details below.</p>
+            <img src="https://uploads.onecompiler.io/445apq2ce/445apnb6g/IMG-20251101-WA0001%5B1%5D.jpg" alt="QR Code" class="mx-auto mb-4 border-4 border-white">
+            <input type="text" id="payer-name" placeholder="Name you paid with" class="w-full p-2 mb-3 rounded bg-gray-700 border border-gray-600">
+            <input type="text" id="utr-id" placeholder="UTR/Transaction ID" class="w-full p-2 mb-3 rounded bg-gray-700 border border-gray-600">
+            <input type="number" id="deposit-amount" placeholder="Amount Paid" class="w-full p-2 mb-4 rounded bg-gray-700 border border-gray-600">
+            <button id="submit-deposit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit Request</button>
+            <button onclick="closeModal('deposit-modal')" class="w-full mt-2 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Close</button>
+        </div>
     </div>
 
-    <script>
-        // Firebase Configuration
+    <!-- DETAILS MODAL -->
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title" class="text-3xl font-bold mb-4"></h3>
+            <img id="modal-main-image" src="" alt="Main Account Image" class="w-full h-64 object-cover rounded-lg mb-4">
+            <h4 class="text-xl font-semibold mb-2">Description</h4>
+            <p id="modal-description" class="text-gray-300 mb-4 whitespace-pre-wrap"></p>
+            <h4 class="text-xl font-semibold mb-2">More Images</h4>
+            <div id="modal-other-images" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6"></div>
+            <div id="modal-buttons" class="flex flex-col gap-2"></div>
+            <button onclick="closeModal('details-modal')" class="w-full mt-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Close</button>
+        </div>
+    </div>
+
+    <!-- CREDENTIALS MODAL -->
+    <div id="credentials-modal" class="modal">
+        <div class="modal-content text-center">
+            <h3 class="text-2xl font-bold mb-4 text-green-400">🎉 Purchase Successful! 🎉</h3>
+            <p class="mb-2">Here are your account details:</p>
+            <div class="bg-gray-900 p-4 rounded text-left">
+                <p><strong>ID/Email:</strong> <span id="purchased-id"></span></p>
+                <p><strong>Password:</strong> <span id="purchased-pass"></span></p>
+            </div>
+            <button onclick="closeModal('credentials-modal')" class="w-full mt-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Close</button>
+        </div>
+    </div>
+
+    <!-- FIREBASE + APP SCRIPT -->
+    <script type="module">
+        // 🔥 FIREBASE IMPORTS
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+        import { getDatabase, ref, set, get, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+        // 🔥 CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyAdgG2KvEQhzCFIq2O8NpcIVG4P7QaO8Vc",
             authDomain: "kunna-ff.firebaseapp.com",
@@ -880,464 +111,209 @@
             measurementId: "G-PJRH47MN92"
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        // 🔥 INITIALIZE
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
 
-        // Loading screen functionality
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                const loadingScreen = document.getElementById('loading-screen');
-                loadingScreen.style.opacity = '0';
-                setTimeout(function() {
-                    loadingScreen.style.display = 'none';
-                    // Load accounts from Firebase
-                    loadAccountsFromFirebase();
-                }, 500);
-            }, 1500);
+        // 🔥 DOM ELEMENTS
+        const authSection = document.getElementById('auth-section');
+        const appSection = document.getElementById('app-section');
+        const userEmailEl = document.getElementById('user-email');
+        const walletBalanceEl = document.getElementById('wallet-balance');
+        const accountsContainer = document.getElementById('accounts-container');
+        const detailsModal = document.getElementById('details-modal');
+
+        let currentUser = null;
+        let userWallet = 0;
+        let isWalletSystemDisabled = false;
+
+        // 🔥 AUTH STATE LISTENER
+        onAuthStateChanged(auth, (user) => {
+            console.log('Auth state changed:', user ? 'Logged In' : 'Logged Out');
+            if (user) {
+                currentUser = user;
+                authSection.classList.add('hidden');
+                appSection.classList.remove('hidden');
+                userEmailEl.textContent = user.email;
+                listenToWallet();
+                listenToSettings();
+                loadAccounts();
+            } else {
+                currentUser = null;
+                authSection.classList.remove('hidden');
+                appSection.classList.add('hidden');
+            }
         });
 
-        // Load accounts from Firebase
-        function loadAccountsFromFirebase() {
-            const accountsRef = database.ref('accounts');
-            accountsRef.once('value')
-                .then((snapshot) => {
-                    const accounts = snapshot.val();
-                    if (accounts) {
-                        renderAccounts(accounts);
-                    } else {
-                        // If no data in Firebase, use the hardcoded accounts
-                        renderDefaultAccounts();
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error loading accounts from Firebase:", error);
-                    // Fallback to hardcoded accounts if Firebase fails
-                    renderDefaultAccounts();
-                });
-        }
+        // 🔥 LOGIN
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            if (!email || !password) { alert('Fill email & password'); return; }
+            try { await signInWithEmailAndPassword(auth, email, password); console.log('Login SUCCESS!'); } 
+            catch (error) { alert(error.message); }
+        });
 
-        // Render accounts from Firebase data
-        function renderAccounts(accounts) {
-            const accountsContainer = document.getElementById('accounts-container');
-            accountsContainer.innerHTML = '';
-            
-            Object.keys(accounts).forEach(key => {
-                const account = accounts[key];
-                const accountCard = createAccountCard(account);
-                accountsContainer.appendChild(accountCard);
+        // 🔥 REGISTER
+        document.getElementById('register-btn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            if (!email || !password) { alert('Fill email & password'); return; }
+            if (password.length < 6) { alert('Password must be >=6'); return; }
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await set(ref(db, `users/${userCredential.user.uid}/wallet`), 0);
+                alert('Registration successful!');
+            } catch (error) { alert(error.message); }
+        });
+
+        // 🔥 LOGOUT
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth);
+            console.log('Logged out');
+        });
+
+        // 🔥 CLOSE MODAL
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+        // 🔥 WALLET LISTENER
+        function listenToWallet() {
+            const userWalletRef = ref(db, `users/${currentUser.uid}/wallet`);
+            onValue(userWalletRef, (snapshot) => {
+                userWallet = snapshot.val() || 0;
+                walletBalanceEl.textContent = userWallet.toFixed(2);
             });
-            
-            // Initialize carousels and event listeners after rendering
-            initializeCarousels();
-            initializeEventListeners();
         }
 
-        // Fallback to hardcoded accounts
-        function renderDefaultAccounts() {
-            const accountsContainer = document.getElementById('accounts-container');
-            accountsContainer.innerHTML = `
-                <!-- Free Fire Accounts -->
-                <div class="account-card featured glow-box" data-game="freefire">
-                    <div class="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/soweUSDaSkI1Nbdgj5VoGI805T_HT3urwUDgkUet58Q/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS9i/MmU1OTIyMC03NzRh/LTQ5NzEtYjY3Zi1m/NGU2MTgwZjhlODdf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/gu5kSgV4P-fkN7q5jBSw8NUxRv5vSSy55L7i3oigvX4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS84/Nzk5ZGQ4Yi1jYTI3/LTQ4Y2ItOTU3YS02/ZDdmZTYwOTg3MTNf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/YQCBrg0OmcShskOH9uzvZfqaMc7NSKDLBN_r65_ZGHI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS8y/OTg2YjMxNC1iOWJj/LTQxYzYtYjQyMS0y/ODU2MThkNDk2Mzdf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                        </div>
-                        <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
-                        <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
-                        <div class="carousel-indicators">
-                            <div class="indicator active"></div>
-                            <div class="indicator"></div>
-                            <div class="indicator"></div>
-                        </div>
-                    </div>
-                    <div class="card-header">
-                        <div class="card-title">
-                            <div class="account-name">Dragon Fury</div>
-                            <div class="price">₹1,299</div>
-                        </div>
-                        <div class="account-id">ID: FF2024DRGN</div>
-                        <div class="badges">
-                            <div class="badge instant">Instant</div>
-                            <div class="badge verified">Verified</div>
-                            <div class="badge rare">Rare Skins</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="description">Elite account with Dragon skin, 15 character slots, and premium weapon skins. Level 70 with 500+ wins.</p>
-                        <div class="urgency">
-                            <i class="fas fa-fire"></i> Only 1 left!
-                        </div>
-                        <button class="buy-btn" data-id="FF2024DRGN" data-name="Dragon Fury" data-price="1299">Buy Now</button>
-                    </div>
-                </div>
-
-                <div class="account-card glow-box" data-game="freefire">
-                    <div class="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/soweUSDaSkI1Nbdgj5VoGI805T_HT3urwUDgkUet58Q/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS9i/MmU1OTIyMC03NzRh/LTQ5NzEtYjY3Zi1m/NGU2MTgwZjhlODdf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/gu5kSgV4P-fkN7q5jBSw8NUxRv5vSSy55L7i3oigvX4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS84/Nzk5ZGQ4Yi1jYTI3/LTQ4Y2ItOTU3YS02/ZDdmZTYwOTg3MTNf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/YQCBrg0OmcShskOH9uzvZfqaMc7NSKDLBN_r65_ZGHI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS8y/OTg2YjMxNC1iOWJj/LTQxYzYtYjQyMS0y/ODU2MThkNDk2Mzdf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                        </div>
-                        <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
-                        <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
-                        <div class="carousel-indicators">
-                            <div class="indicator active"></div>
-                            <div class="indicator"></div>
-                            <div class="indicator"></div>
-                        </div>
-                    </div>
-                    <div class="card-header">
-                        <div class="card-title">
-                            <div class="account-name">Ice Queen</div>
-                            <div class="price">₹899</div>
-                        </div>
-                        <div class="account-id">ID: FF2024ICE</div>
-                        <div class="badges">
-                            <div class="badge instant">Instant</div>
-                            <div class="badge verified">Verified</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="description">Premium account with Ice Queen bundle, 10 character slots, and glacier weapon skins. Level 60 with 300+ wins.</p>
-                        <button class="buy-btn" data-id="FF2024ICE" data-name="Ice Queen" data-price="899">Buy Now</button>
-                    </div>
-                </div>
-
-                <div class="account-card featured glow-box" data-game="freefire">
-                    <div class="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/soweUSDaSkI1Nbdgj5VoGI805T_HT3urwUDgkUet58Q/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS9i/MmU1OTIyMC03NzRh/LTQ5NzEtYjY3Zi1m/NGU2MTgwZjhlODdf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/gu5kSgV4P-fkN7q5jBSw8NUxRv5vSSy55L7i3oigvX4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS84/Nzk5ZGQ4Yi1jYTI3/LTQ4Y2ItOTU3YS02/ZDdmZTYwOTg3MTNf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/YQCBrg0OmcShskOH9uzvZfqaMc7NSKDLBN_r65_ZGHI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS8y/OTg2YjMxNC1iOWJj/LTQxYzYtYjQyMS0y/ODU2MThkNDk2Mzdf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                        </div>
-                        <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
-                        <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
-                        <div class="carousel-indicators">
-                            <div class="indicator active"></div>
-                            <div class="indicator"></div>
-                            <div class="indicator"></div>
-                        </div>
-                    </div>
-                    <div class="card-header">
-                        <div class="card-title">
-                            <div class="account-name">Phantom Assassin</div>
-                            <div class="price">₹1,599</div>
-                        </div>
-                        <div class="account-id">ID: FF2024PHNTM</div>
-                        <div class="badges">
-                            <div class="badge instant">Instant</div>
-                            <div class="badge verified">Verified</div>
-                            <div class="badge rare">Limited</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="description">Exclusive Phantom bundle with rare assassin skin, 20 character slots, and custom kill effects.</p>
-                        <div class="urgency">
-                            <i class="fas fa-clock"></i> Selling fast!
-                        </div>
-                        <button class="buy-btn" data-id="FF2024PHNTM" data-name="Phantom Assassin" data-price="1599">Buy Now</button>
-                    </div>
-                </div>
-
-                <!-- PUBG Accounts -->
-                <div class="account-card glow-box" data-game="pubg" style="display: none;">
-                    <div class="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/mIsc68xCPD94gbF6Wsqphgv-uyqSlrCwZtndHhlswtA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5rYXJvdXNlbGwu/Y29tL21lZGlhL3Bo/b3Rvcy9wcm9kdWN0/cy8yMDI1LzUvMy9w/dWJnX21vYmlsZV9h/Y2NvdW50XzE3NDYy/NjMwMjhfNzZmYzMx/OThfcHJvZ3Jlc3Np/dmVfdGh1bWJuYWls/LmpwZw')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/3EVlg1ZC9Eg_ruaCtatzkI52kz8VPeo5ccspJ_18KGc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9za3lj/b2FjaC5nZy9zdG9y/YWdlL3VwbG9hZHMv/cHJvZHVjdF9jdXJy/ZW5jeV9vZmZlci9z/Y3JlZW5zaG90L2Fk/ZjQ2NjMxLWEyY2Et/NGEyZC04Nzg4LTY4/OTI1NTg1NWY4NS5w/bmc')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/pZDX0bOEXY8w4NRBINZtlxIjuncBTGNhZpp_rZGbM4A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLmVi/YXlpbWcuY29tL3Ro/dW1icy9pbWFnZXMv/Zy9LaWtBQU9Td0Zt/Vm5tZWlCL3MtbDUw/MC5qcGc')"></div>
-                        </div>
-                        <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
-                        <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
-                        <div class="carousel-indicators">
-                            <div class="indicator active"></div>
-                            <div class="indicator"></div>
-                            <div class="indicator"></div>
-                        </div>
-                    </div>
-                    <div class="card-header">
-                        <div class="card-title">
-                            <div class="account-name">Desert Warrior</div>
-                            <div class="price">₹1,799</div>
-                        </div>
-                        <div class="account-id">ID: PUBG2024DSRT</div>
-                        <div class="badges">
-                            <div class="badge instant">Instant</div>
-                            <div class="badge verified">Verified</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="description">Premium PUBG account with Desert Warrior skin set, Conqueror rank last season, and rare weapon finishes.</p>
-                        <button class="buy-btn" data-id="PUBG2024DSRT" data-name="Desert Warrior" data-price="1799">Buy Now</button>
-                    </div>
-                </div>
-
-                <div class="account-card featured glow-box" data-game="pubg" style="display: none;">
-                    <div class="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/L3JMFj2a2RsXDmzeSj88gngI6Q4P5DO4mmmk21JjXt0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS81/ZmNlMTgxNy1jNTE2/LTRhMGUtOTUzZC0z/MzI0MTQzNjEyYmFf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/3EVlg1ZC9Eg_ruaCtatzkI52kz8VPeo5ccspJ_18KGc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9za3lj/b2FjaC5nZy9zdG9y/YWdlL3VwbG9hZHMv/cHJvZHVjdF9jdXJy/ZW5jeV9vZmZlci9z/Y3JlZW5zaG90L2Fk/ZjQ2NjMxLWEyY2Et/NGEyZC04Nzg4LTY4/OTI1NTg1NWY4NS5w/bmc')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/LYkloe9R8hdA9GrUTRD1DYRM_na8bpgPKqhoOs3Qi2o/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9za3lj/b2FjaC5nZy9zdG9y/YWdlL3VwbG9hZHMv/cHJvZHVjdF9jdXJy/ZW5jeV9vZmZlci9z/Y3JlZW5zaG90L2Qy/NWY5NTQzLTczNTAt/NDE4ZC05YWFmLTZj/ZDM5YjFhYWU2Yy5q/cGc')"></div>
-                        </div>
-                        <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
-                        <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
-                        <div class="carousel-indicators">
-                            <div class="indicator active"></div>
-                            <div class="indicator"></div>
-                            <div class="indicator"></div>
-                        </div>
-                    </div>
-                    <div class="card-header">
-                        <div class="card-title">
-                            <div class="account-name">Mystic Legend</div>
-                            <div class="price">₹2,299</div>
-                        </div>
-                        <div class="account-id">ID: PUBG2024MYST</div>
-                        <div class="badges">
-                            <div class="badge instant">Instant</div>
-                            <div class="badge verified">Verified</div>
-                            <div class="badge rare">Mythic</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="description">Legendary account with complete Mystic set, Ace Dominator title, and exclusive vehicle skins.</p>
-                        <div class="urgency">
-                            <i class="fas fa-fire"></i> Only 2 left!
-                        </div>
-                        <button class="buy-btn" data-id="PUBG2024MYST" data-name="Mystic Legend" data-price="2299">Buy Now</button>
-                    </div>
-                </div>
-
-                <div class="account-card glow-box" data-game="pubg" style="display: none;">
-                    <div class="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/JQxmW4riTKS57VQObKzD38WvpD0OrtSMhEokXYL3Us4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS83/Mjg0OGIxYy0yNjcz/LTRlZmEtYTlmNi1j/ZjZhZmRlZWZlYzhf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/3EVlg1ZC9Eg_ruaCtatzkI52kz8VPeo5ccspJ_18KGc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9za3lj/b2FjaC5nZy9zdG9y/YWdlL3VwbG9hZHMv/cHJvZHVjdF9jdXJy/ZW5jeV9vZmZlci9z/Y3JlZW5zaG90L2Fk/ZjQ2NjMxLWEyY2Et/NGEyZC04Nzg4LTY4/OTI1NTg1NWY4NS5w/bmc')"></div>
-                            <div class="carousel-item" style="background-image: url('https://imgs.search.brave.com/yV8UIZPUQFjORvCoX6orF5ajL64brhPxmrghMLgHDfI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/b2ZmZXItcGhvdG9z/LnpldXN4LmNvbS84/Y2VlYTA1Ni05NTM0/LTRmZjctYTAzNS0w/ZDVjZGViYTcwNzJf/dGh1bWJuYWlsQHgx/LmpwZw')"></div>
-                        </div>
-                        <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
-                        <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
-                        <div class="carousel-indicators">
-                            <div class="indicator active"></div>
-                            <div class="indicator"></div>
-                            <div class="indicator"></div>
-                        </div>
-                    </div>
-                    <div class="card-header">
-                        <div class="card-title">
-                            <div class="account-name">Urban Sniper</div>
-                            <div class="price">₹1,299</div>
-                        </div>
-                        <div class="account-id">ID: PUBG2024URBN</div>
-                        <div class="badges">
-                            <div class="badge instant">Instant</div>
-                            <div class="badge verified">Verified</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="description">Sniper specialist account with Urban Trooper skin, multiple AWM skins, and Ace rank achievements.</p>
-                        <button class="buy-btn" data-id="PUBG2024URBN" data-name="Urban Sniper" data-price="1299">Buy Now</button>
-                    </div>
-                </div>
-            `;
-            
-            // Initialize carousels and event listeners after rendering
-            initializeCarousels();
-            initializeEventListeners();
+        // 🔥 SETTINGS LISTENER
+        function listenToSettings() {
+            const settingsRef = ref(db, 'settings/isWalletDisabled');
+            onValue(settingsRef, (snapshot) => { isWalletSystemDisabled = snapshot.val() === true; });
         }
 
-        // Create account card from Firebase data
-        function createAccountCard(account) {
+        // 🔥 LOAD ACCOUNTS
+        function loadAccounts() {
+            const accountsRef = ref(db, 'accounts');
+            onValue(accountsRef, (snapshot) => {
+                accountsContainer.innerHTML = '';
+                const data = snapshot.val();
+                if (data) {
+                    Object.entries(data).forEach(([key, value]) => { accountsContainer.appendChild(createAccountCard(key, value)); });
+                } else {
+                    accountsContainer.innerHTML = '<p class="text-center col-span-full">No accounts available right now.</p>';
+                }
+            });
+        }
+
+        function createAccountCard(id, data) {
             const card = document.createElement('div');
-            card.className = `account-card ${account.featured ? 'featured' : ''} glow-box`;
-            card.setAttribute('data-game', account.game);
-            
-            // Create carousel HTML
-            let carouselHTML = '<div class="carousel"><div class="carousel-inner">';
-            account.images.forEach(img => {
-                carouselHTML += `<div class="carousel-item" style="background-image: url('${img}')"></div>`;
-            });
-            carouselHTML += `</div>
-                <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
-                <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
-                <div class="carousel-indicators">`;
-            
-            account.images.forEach((_, index) => {
-                carouselHTML += `<div class="indicator ${index === 0 ? 'active' : ''}"></div>`;
-            });
-            carouselHTML += '</div></div>';
-            
-            // Create badges HTML
-            let badgesHTML = '<div class="badges">';
-            account.badges.forEach(badge => {
-                badgesHTML += `<div class="badge ${badge}">${badge.charAt(0).toUpperCase() + badge.slice(1)}</div>`;
-            });
-            badgesHTML += '</div>';
-            
-            // Create urgency HTML if applicable
-            let urgencyHTML = '';
-            if (account.urgency) {
-                urgencyHTML = `<div class="urgency"><i class="fas fa-${account.urgency.icon}"></i> ${account.urgency.text}</div>`;
-            }
-            
-            // Complete card HTML
+            card.className = 'bg-gray-800 rounded-lg overflow-hidden shadow-lg account-card';
+            card.dataset.id = id;
+            const shortDescription = data.description.split('\n')[0].substring(0, 60) + '...';
             card.innerHTML = `
-                ${carouselHTML}
-                <div class="card-header">
-                    <div class="card-title">
-                        <div class="account-name">${account.name}</div>
-                        <div class="price">₹${account.price}</div>
-                    </div>
-                    <div class="account-id">ID: ${account.id}</div>
-                    ${badgesHTML}
-                </div>
-                <div class="card-body">
-                    <p class="description">${account.description}</p>
-                    ${urgencyHTML}
-                    <button class="buy-btn" data-id="${account.id}" data-name="${account.name}" data-price="${account.price}">Buy Now</button>
-                </div>
-            `;
-            
+                <img class="w-full h-48 object-cover" src="${data.mainImage}" alt="${data.name}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                <div class="p-4">
+                    <h3 class="font-bold text-xl mb-2">${data.name}</h3>
+                    <p class="text-gray-400 text-sm">${shortDescription}</p>
+                    <p class="text-green-400 font-bold mt-2">₹${data.price}</p>
+                </div>`;
             return card;
         }
 
-        // Initialize carousels
-        function initializeCarousels() {
-            document.querySelectorAll('.carousel').forEach(carousel => {
-                const inner = carousel.querySelector('.carousel-inner');
-                const items = carousel.querySelectorAll('.carousel-item');
-                const indicators = carousel.querySelectorAll('.indicator');
-                const prevBtn = carousel.querySelector('.prev');
-                const nextBtn = carousel.querySelector('.next');
-                
-                let currentIndex = 0;
-                const totalItems = items.length;
-                
-                function updateCarousel() {
-                    inner.style.transform = `translateX(-${currentIndex * 100}%)`;
-                    
-                    // Update indicators
-                    indicators.forEach((indicator, index) => {
-                        if (index === currentIndex) {
-                            indicator.classList.add('active');
-                        } else {
-                            indicator.classList.remove('active');
-                        }
-                    });
-                }
-                
-                // Next button
-                nextBtn.addEventListener('click', () => {
-                    currentIndex = (currentIndex + 1) % totalItems;
-                    updateCarousel();
+        // 🔥 DETAILS MODAL
+        accountsContainer.addEventListener('click', async (e) => {
+            const card = e.target.closest('.account-card');
+            if (card) { showDetailsModal(card.dataset.id); }
+        });
+
+        async function showDetailsModal(accountId) {
+            const accountRef = ref(db, `accounts/${accountId}`);
+            const snapshot = await get(accountRef);
+            if (!snapshot.exists()) { alert("This account is no longer available."); return; }
+            const data = snapshot.val();
+
+            document.getElementById('modal-title').textContent = data.name;
+            document.getElementById('modal-main-image').src = data.mainImage;
+            document.getElementById('modal-description').textContent = data.description;
+
+            const otherImagesContainer = document.getElementById('modal-other-images');
+            otherImagesContainer.innerHTML = '';
+            if(data.otherImages && data.otherImages.length > 0) {
+                data.otherImages.forEach(imgUrl => {
+                    const img = document.createElement('img');
+                    img.src = imgUrl;
+                    img.className = 'w-full h-32 object-cover rounded';
+                    otherImagesContainer.appendChild(img);
                 });
-                
-                // Previous button
-                prevBtn.addEventListener('click', () => {
-                    currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-                    updateCarousel();
-                });
-                
-                // Indicator clicks
-                indicators.forEach((indicator, index) => {
-                    indicator.addEventListener('click', () => {
-                        currentIndex = index;
-                        updateCarousel();
-                    });
-                });
-                
-                // Auto-advance carousel every 5 seconds
-                setInterval(() => {
-                    currentIndex = (currentIndex + 1) % totalItems;
-                    updateCarousel();
-                }, 5000);
-            });
+            } else {
+                otherImagesContainer.innerHTML = '<p class="text-gray-400 col-span-full">No other images available.</p>';
+            }
+
+            const buttonsContainer = document.getElementById('modal-buttons');
+            let buttonsHtml = `<a href="${data.contactLink}" target="_blank" class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Contact Owner</a>`;
+            if (!isWalletSystemDisabled || userWallet >= data.price) {
+                buttonsHtml += `<button data-id="${accountId}" class="buy-btn w-full text-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Buy Now (₹${data.price})</button>`;
+            }
+            buttonsContainer.innerHTML = buttonsHtml;
+            
+            detailsModal.style.display = 'block';
         }
 
-        // Initialize event listeners
-        function initializeEventListeners() {
-            // Tab functionality
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Update active tab
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Show/hide accounts based on selected tab
-                    const game = this.getAttribute('data-tab');
-                    document.querySelectorAll('.account-card').forEach(card => {
-                        if (card.getAttribute('data-game') === game) {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
-                });
-            });
+        // 🔥 BUY BUTTON
+        document.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('buy-btn')) { await handleBuy(e.target.dataset.id); }
+        });
 
-            // Enhanced card hover with tilt effect
-            document.querySelectorAll('.account-card').forEach(card => {
-                card.addEventListener('mousemove', (e) => {
-                    if (window.innerWidth < 768) return; // Disable on mobile
-                    
-                    const cardRect = card.getBoundingClientRect();
-                    const centerX = cardRect.left + cardRect.width / 2;
-                    const centerY = cardRect.top + cardRect.height / 2;
-                    const mouseX = e.clientX - centerX;
-                    const mouseY = e.clientY - centerY;
-                    
-                    const rotateY = (mouseX / (cardRect.width / 2)) * 3; // Reduced sensitivity
-                    const rotateX = -(mouseY / (cardRect.height / 2)) * 3;
-                    
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px) scale(1.02)`;
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)';
-                    setTimeout(() => {
-                        card.style.transform = '';
-                    }, 50);
-                });
-            });
+        async function handleBuy(accountId) {
+            if (!confirm("Are you sure you want to buy this account?")) return;
 
-            // Buy button functionality
-            document.querySelectorAll('.buy-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const accountId = this.getAttribute('data-id');
-                    const accountName = this.getAttribute('data-name');
-                    const accountPrice = this.getAttribute('data-price');
-                    
-                    // Get description from the card
-                    const card = this.closest('.account-card');
-                    const description = card.querySelector('.description').textContent;
-                    
-                    // Update buy page details
-                    document.getElementById('detail-name').textContent = accountName;
-                    document.getElementById('detail-id').textContent = accountId;
-                    document.getElementById('detail-price').textContent = `₹${accountPrice}`;
-                    document.getElementById('detail-desc').textContent = description;
-                    
-                    // Update WhatsApp link
-                    const whatsappMessage = `Hi! I want to buy ${accountName} (${accountId}). Please share payment details.`;
-                    const encodedMessage = encodeURIComponent(whatsappMessage);
-                    document.getElementById('whatsapp-buy-btn').href = `https://wa.me/919526725376?text=${encodedMessage}`;
-                    
-                    // Switch to buy page
-                    document.getElementById('home-page').style.display = 'none';
-                    document.getElementById('buy-page').style.display = 'block';
-                });
-            });
+            const accountRef = ref(db, `accounts/${accountId}`);
+            const accountSnapshot = await get(accountRef);
+            if (!accountSnapshot.exists()) { alert("This account is no longer available."); return; }
+            const accountData = accountSnapshot.val();
 
-            // Back button functionality
-            document.getElementById('back-btn').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.getElementById('buy-page').style.display = 'none';
-                document.getElementById('home-page').style.display = 'block';
-            });
+            if (userWallet < accountData.price) { alert(`Insufficient balance! Need ₹${accountData.price} but have ₹${userWallet}`); return; }
+
+            const newBalance = userWallet - accountData.price;
+            await set(ref(db, `users/${currentUser.uid}/wallet`), newBalance);
+            await remove(accountRef);
+
+            closeModal('details-modal');
+            document.getElementById('purchased-id').textContent = accountData.ffId;
+            document.getElementById('purchased-pass').textContent = accountData.ffPassword;
+            document.getElementById('credentials-modal').style.display = 'block';
         }
+
+        // 🔥 DEPOSIT
+        document.getElementById('deposit-btn').addEventListener('click', () => { document.getElementById('deposit-modal').style.display = 'block'; });
+
+        document.getElementById('submit-deposit-btn').addEventListener('click', () => {
+            const name = document.getElementById('payer-name').value.trim();
+            const utr = document.getElementById('utr-id').value.trim();
+            const amount = parseFloat(document.getElementById('deposit-amount').value);
+
+            if (!name || !utr || !amount || amount <= 0) { alert('Please fill all fields correctly.'); return; }
+
+            const requestId = `req_${Date.now()}`;
+            const requestRef = ref(db, `depositRequests/${requestId}`);
+            set(requestRef, {
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                payerName: name,
+                utr: utr,
+                amount: amount,
+                timestamp: new Date().toISOString()
+            }).then(() => {
+                alert('✅ Deposit request sent! Admin will approve soon.');
+                closeModal('deposit-modal');
+                document.getElementById('payer-name').value = '';
+                document.getElementById('utr-id').value = '';
+                document.getElementById('deposit-amount').value = '';
+            }).catch(err => { alert('Error: ' + err.message); });
+        });
+
+        console.log('🚀 FF ID Store Loaded Successfully!');
     </script>
 </body>
 </html>
