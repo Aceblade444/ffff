@@ -632,13 +632,9 @@
         </header>
         <section class="hero text-center p-6">
             <h2 class="text-3xl font-bold gradient-text glow-text mb-4">Premium Gaming Accounts</h2>
-            <p class="text-gray-400">Buy & Sell Free Fire & PUBG Accounts. Curated premium accounts with instant delivery.</p>
+            <p class="text-gray-400">Buy & Sell Free Fire Accounts. Curated premium accounts with instant delivery.</p>
         </section>
-        <div class="tabs">
-            <button class="tab active" data-tab="freefire">𒆙 FreeFire ❖</button>
-            <button class="tab" data-tab="pubg">❖ PUBG 𒆙</button>
-        </div>
-        <main id="accounts-container" class="p-6 flex flex-row flex-nowrap overflow-x-auto gap-6 horizontal-scroll sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:overflow-visible sm:flex-wrap">
+        <main id="accounts-container" class="p-6 flex flex-row flex-nowrap overflow-x-auto gap-8 horizontal-scroll sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:overflow-visible sm:flex-wrap">
             <!-- Accounts will be loaded here -->
         </main>
     </div>
@@ -831,15 +827,12 @@
                     accountsContainer.innerHTML = '<p class="text-center col-span-full text-gray-400 py-10">No accounts available right now. Check back later!</p>';
                 }
                 initCarousels();
-                // Default to show freefire
-                document.querySelector('.tab[data-tab="freefire"]').click();
             });
         }
         function createAccountCard(id, data) {
             const card = document.createElement('div');
             card.className = 'account-card glow-box' + (data.isFeatured ? ' featured' : '');
             card.dataset.id = id;
-            card.dataset.game = data.game || 'freefire'; // Assume data has 'game' field: 'freefire' or 'pubg'
           
             const shortDescription = data.description.split('\n')[0].substring(0, 60) + '...';
           
@@ -935,18 +928,6 @@
                 }, 5000);
             });
         }
-        // Tab functionality
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-               
-                const game = this.getAttribute('data-tab');
-                document.querySelectorAll('.account-card').forEach(card => {
-                    card.style.display = (game === card.getAttribute('data-game')) ? 'block' : 'none';
-                });
-            });
-        });
         // 🔥 DETAILS MODAL
         accountsContainer.addEventListener('click', async (e) => {
             const card = e.target.closest('.account-card');
