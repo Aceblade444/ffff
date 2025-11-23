@@ -44,7 +44,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYjNmOWVnNnc4YnRmYXBveWFiNXpiNzVsNzlwNGgzdzdicmE2c2dtcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/uFi4FuV3ABRjlcWfsa/giphy.gif');
+            background: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYjNmOWVnNnc4YnRmYXBveWFiNXpiNzVsNzlwNGgzdzdicmE2c2dtcSZlcD12MV9naWZzX3NlYXJjaCZjdT1n/uFi4FuV3ABRjlcWfsa/giphy.gif');
             background-size: cover;
             background-position: center;
             opacity: 0.3;
@@ -575,6 +575,82 @@
             font-size: 1.5rem;
             color: white;
         }
+        /* Enhanced Media Display */
+        .media-container {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        .media-slider {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 100%;
+        }
+        .media-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1e293b;
+        }
+        .media-slide img, .media-slide video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .media-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        .media-nav:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+        .media-nav.prev {
+            left: 10px;
+        }
+        .media-nav.next {
+            right: 10px;
+        }
+        .media-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            z-index: 2;
+        }
+        .media-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .media-indicator.active {
+            background: white;
+            transform: scale(1.2);
+            box-shadow: 0 0 8px white;
+        }
     </style>
 </head>
 <body>
@@ -595,12 +671,16 @@
             <p class="text-gray-400 mt-2">Access premium gaming accounts</p>
         </div>
         <div class="mb-4">
+            <label for="username" class="block mb-2 text-gray-300">Username:</label>
+            <input type="text" id="username" class="w-full p-3 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" placeholder="Choose a username">
+        </div>
+        <div class="mb-4">
             <label for="email" class="block mb-2 text-gray-300">Email:</label>
-            <input type="email" id="email" class="w-full p-3 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition">
+            <input type="email" id="email" class="w-full p-3 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" placeholder="your@email.com">
         </div>
         <div class="mb-6">
             <label for="password" class="block mb-2 text-gray-300">Password:</label>
-            <input type="password" id="password" class="w-full p-3 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition">
+            <input type="password" id="password" class="w-full p-3 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" placeholder="Minimum 6 characters">
         </div>
         <div class="flex gap-4">
             <button id="login-btn" class="flex-1 btn-primary text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2">
@@ -616,7 +696,7 @@
         <header class="header-gradient p-4 flex justify-between items-center sticky top-0 z-50 border-b border-slate-700">
             <div>
                 <h1 class="text-2xl font-bold gradient-text glow-text">HORIZON</h1>
-                <p id="user-email" class="text-sm text-gray-400"></p>
+                <p id="user-info" class="text-sm text-gray-400"></p>
             </div>
             <div class="flex items-center gap-3">
                 <div class="glass-effect px-4 py-2 rounded-xl">
@@ -659,14 +739,26 @@
     <div id="details-modal" class="modal">
         <div class="modal-content">
             <h3 id="modal-title" class="text-3xl font-bold mb-4 gradient-text glow-text"></h3>
-            <div class="relative">
-                <img id="modal-main-image" src="" alt="Main Account Image" class="w-full h-64 object-cover rounded-xl mb-4">
-                <div class="premium-badge">PREMIUM</div>
+            
+            <!-- Enhanced Media Display -->
+            <div class="media-container">
+                <div class="media-slider" id="media-slider">
+                    <!-- Media slides will be inserted here -->
+                </div>
+                <button class="media-nav prev" id="media-prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="media-nav next" id="media-next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="media-indicators" id="media-indicators">
+                    <!-- Indicators will be inserted here -->
+                </div>
             </div>
+
             <h4 class="text-xl font-semibold mb-2 text-gray-300">Description</h4>
             <p id="modal-description" class="text-gray-300 mb-4 whitespace-pre-wrap bg-slate-800 p-4 rounded-xl"></p>
-            <h4 class="text-xl font-semibold mb-2 text-gray-300">More Images</h4>
-            <div id="modal-other-images" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6"></div>
+            
             <div id="modal-buttons" class="flex flex-col gap-3"></div>
             <button id="close-details-modal" class="w-full mt-4 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-4 rounded-xl transition">Close</button>
         </div>
@@ -723,13 +815,16 @@
         const loadingEl = document.getElementById('loading');
         const authSection = document.getElementById('auth-section');
         const appSection = document.getElementById('app-section');
-        const userEmailEl = document.getElementById('user-email');
+        const userInfoEl = document.getElementById('user-info');
         const walletBalanceEl = document.getElementById('wallet-balance');
         const accountsContainer = document.getElementById('accounts-container');
         const detailsModal = document.getElementById('details-modal');
         let currentUser = null;
         let userWallet = 0;
         let isWalletSystemDisabled = false;
+        let currentMediaIndex = 0;
+        let currentMediaSlides = [];
+
         // Simulate loading for demonstration
         setTimeout(() => {
             loadingEl.style.opacity = '0';
@@ -737,14 +832,28 @@
                 loadingEl.style.display = 'none';
             }, 500);
         }, 2000);
+
         // 🔥 AUTH STATE LISTENER
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             console.log('Auth state changed:', user ? 'Logged In' : 'Logged Out');
             if (user) {
                 currentUser = user;
                 authSection.classList.add('hidden');
                 appSection.classList.remove('hidden');
-                userEmailEl.textContent = user.email;
+                
+                // Load user data including username
+                const userRef = ref(db, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+                
+                if (userData) {
+                    const displayText = userData.username ? 
+                        `@${userData.username} | ${user.email}` : user.email;
+                    userInfoEl.textContent = displayText;
+                } else {
+                    userInfoEl.textContent = user.email;
+                }
+                
                 listenToWallet();
                 listenToSettings();
                 loadAccounts();
@@ -754,34 +863,68 @@
                 appSection.classList.add('hidden');
             }
         });
+
         // 🔥 LOGIN
         document.getElementById('login-btn').addEventListener('click', async () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            if (!email || !password) { alert('Fill email & password'); return; }
+            if (!email || !password) { 
+                alert('Please fill email & password'); 
+                return; 
+            }
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 console.log('Login SUCCESS!');
             }
-            catch (error) { alert(error.message); }
+            catch (error) { 
+                alert(error.message); 
+            }
         });
+
         // 🔥 REGISTER
         document.getElementById('register-btn').addEventListener('click', async () => {
+            const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            if (!email || !password) { alert('Fill email & password'); return; }
-            if (password.length < 6) { alert('Password must be >=6'); return; }
+            
+            if (!username || !email || !password) { 
+                alert('Please fill all fields'); 
+                return; 
+            }
+            if (password.length < 6) { 
+                alert('Password must be at least 6 characters'); 
+                return; 
+            }
+            if (username.length < 3) {
+                alert('Username must be at least 3 characters');
+                return;
+            }
+
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await set(ref(db, `users/${userCredential.user.uid}/wallet`), 0);
-                alert('Registration successful!');
-            } catch (error) { alert(error.message); }
+                const user = userCredential.user;
+                
+                // Store user data with username
+                await set(ref(db, `users/${user.uid}`), {
+                    email: email,
+                    username: username,
+                    wallet: 0,
+                    createdAt: new Date().toISOString(),
+                    isBanned: false
+                });
+                
+                alert('Registration successful! Welcome to HORIZON!');
+            } catch (error) { 
+                alert(error.message); 
+            }
         });
+
         // 🔥 LOGOUT
         document.getElementById('logout-btn').addEventListener('click', () => {
             signOut(auth);
             console.log('Logged out');
         });
+
         // 🔥 CLOSE MODAL FUNCTIONS
         document.getElementById('close-deposit-modal').addEventListener('click', () => {
             document.getElementById('deposit-modal').style.display = 'none';
@@ -794,12 +937,14 @@
         document.getElementById('close-credentials-modal').addEventListener('click', () => {
             document.getElementById('credentials-modal').style.display = 'none';
         });
+
         // Close modals when clicking outside
         window.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal')) {
                 e.target.style.display = 'none';
             }
         });
+
         // 🔥 WALLET LISTENER
         function listenToWallet() {
             const userWalletRef = ref(db, `users/${currentUser.uid}/wallet`);
@@ -808,11 +953,15 @@
                 walletBalanceEl.textContent = userWallet.toFixed(2);
             });
         }
+
         // 🔥 SETTINGS LISTENER
         function listenToSettings() {
             const settingsRef = ref(db, 'settings/isWalletDisabled');
-            onValue(settingsRef, (snapshot) => { isWalletSystemDisabled = snapshot.val() === true; });
+            onValue(settingsRef, (snapshot) => { 
+                isWalletSystemDisabled = snapshot.val() === true; 
+            });
         }
+
         // 🔥 LOAD ACCOUNTS
         function loadAccounts() {
             const accountsRef = ref(db, 'accounts');
@@ -829,6 +978,7 @@
                 initCarousels();
             });
         }
+
         function createAccountCard(id, data) {
             const card = document.createElement('div');
             card.className = 'account-card glow-box' + (data.isFeatured ? ' featured' : '');
@@ -886,6 +1036,7 @@
           
             return card;
         }
+
         // Initialize carousels
         function initCarousels() {
             document.querySelectorAll('.carousel').forEach(carousel => {
@@ -928,6 +1079,7 @@
                 }, 5000);
             });
         }
+
         // 🔥 DETAILS MODAL
         accountsContainer.addEventListener('click', async (e) => {
             const card = e.target.closest('.account-card');
@@ -944,26 +1096,21 @@
                 showDetailsModal(accountId);
             }
         });
+
         async function showDetailsModal(accountId) {
             const accountRef = ref(db, `accounts/${accountId}`);
             const snapshot = await get(accountRef);
-            if (!snapshot.exists()) { alert("This account is no longer available."); return; }
+            if (!snapshot.exists()) { 
+                alert("This account is no longer available."); 
+                return; 
+            }
             const data = snapshot.val();
             document.getElementById('modal-title').textContent = data.name;
-            document.getElementById('modal-main-image').src = data.mainImage;
             document.getElementById('modal-description').textContent = data.description;
-            const otherImagesContainer = document.getElementById('modal-other-images');
-            otherImagesContainer.innerHTML = '';
-            if(data.otherImages && data.otherImages.length > 0) {
-                data.otherImages.forEach(imgUrl => {
-                    const img = document.createElement('img');
-                    img.src = imgUrl;
-                    img.className = 'w-full h-32 object-cover rounded-xl';
-                    otherImagesContainer.appendChild(img);
-                });
-            } else {
-                otherImagesContainer.innerHTML = '<p class="text-gray-400 col-span-full text-center py-4">No additional images available.</p>';
-            }
+            
+            // Setup enhanced media display
+            setupMediaDisplay(data);
+            
             const buttonsContainer = document.getElementById('modal-buttons');
             let buttonsHtml = `<a href="${data.contactLink || 'https://wa.me/919526725376?text=Hi! Contact about ' + data.name}" target="_blank" class="btn-secondary text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2">
                 <i class="fas fa-comment-alt"></i> Contact Owner
@@ -983,17 +1130,142 @@
           
             detailsModal.style.display = 'block';
         }
+
+        // Enhanced Media Display
+        function setupMediaDisplay(data) {
+            const mediaSlider = document.getElementById('media-slider');
+            const mediaIndicators = document.getElementById('media-indicators');
+            const mediaPrev = document.getElementById('media-prev');
+            const mediaNext = document.getElementById('media-next');
+            
+            mediaSlider.innerHTML = '';
+            mediaIndicators.innerHTML = '';
+            currentMediaSlides = [];
+            currentMediaIndex = 0;
+
+            // Add main image
+            if (data.mainImage) {
+                currentMediaSlides.push({
+                    type: 'image',
+                    url: data.mainImage
+                });
+            }
+
+            // Add video if exists
+            if (data.videoUrl) {
+                currentMediaSlides.push({
+                    type: 'video',
+                    url: data.videoUrl
+                });
+            }
+
+            // Add other images
+            if (data.otherImages && data.otherImages.length > 0) {
+                data.otherImages.forEach(url => {
+                    currentMediaSlides.push({
+                        type: 'image',
+                        url: url
+                    });
+                });
+            }
+
+            // Create slides and indicators
+            currentMediaSlides.forEach((slide, index) => {
+                // Create slide
+                const slideDiv = document.createElement('div');
+                slideDiv.className = 'media-slide';
+                
+                if (slide.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = slide.url;
+                    img.alt = 'Account image';
+                    slideDiv.appendChild(img);
+                } else if (slide.type === 'video') {
+                    const video = document.createElement('video');
+                    video.src = slide.url;
+                    video.controls = true;
+                    video.muted = true;
+                    slideDiv.appendChild(video);
+                }
+                
+                mediaSlider.appendChild(slideDiv);
+
+                // Create indicator
+                const indicator = document.createElement('div');
+                indicator.className = `media-indicator ${index === 0 ? 'active' : ''}`;
+                indicator.dataset.index = index;
+                indicator.addEventListener('click', () => {
+                    goToMediaSlide(index);
+                });
+                mediaIndicators.appendChild(indicator);
+            });
+
+            // Navigation events
+            mediaPrev.addEventListener('click', () => {
+                goToMediaSlide(currentMediaIndex - 1);
+            });
+
+            mediaNext.addEventListener('click', () => {
+                goToMediaSlide(currentMediaIndex + 1);
+            });
+
+            // Auto-play videos when they become active
+            mediaSlider.addEventListener('transitionend', () => {
+                const currentSlide = mediaSlider.children[currentMediaIndex];
+                const video = currentSlide.querySelector('video');
+                if (video) {
+                    video.play().catch(e => console.log('Video autoplay prevented:', e));
+                }
+            });
+
+            // Initialize first slide
+            updateMediaDisplay();
+        }
+
+        function goToMediaSlide(index) {
+            const totalSlides = currentMediaSlides.length;
+            if (index < 0) index = totalSlides - 1;
+            if (index >= totalSlides) index = 0;
+            
+            currentMediaIndex = index;
+            updateMediaDisplay();
+        }
+
+        function updateMediaDisplay() {
+            const mediaSlider = document.getElementById('media-slider');
+            const indicators = document.querySelectorAll('.media-indicator');
+            
+            // Update slider position
+            mediaSlider.style.transform = `translateX(-${currentMediaIndex * 100}%)`;
+            
+            // Update indicators
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentMediaIndex);
+            });
+
+            // Pause all videos except current
+            document.querySelectorAll('.media-slide video').forEach((video, index) => {
+                if (index !== currentMediaIndex) {
+                    video.pause();
+                }
+            });
+        }
+
         // 🔥 BUY BUTTON
         document.addEventListener('click', async (e) => {
             if (e.target.classList.contains('buy-btn')) {
                 await handleBuy(e.target.dataset.id);
             }
         });
+
         async function handleBuy(accountId) {
             if (!confirm("Are you sure you want to buy this account?")) return;
             const accountRef = ref(db, `accounts/${accountId}`);
             const accountSnapshot = await get(accountRef);
-            if (!accountSnapshot.exists()) { alert("This account is no longer available."); return; }
+            if (!accountSnapshot.exists()) { 
+                alert("This account is no longer available."); 
+                return; 
+            }
           
             const accountData = accountSnapshot.val();
           
@@ -1026,10 +1298,12 @@
             document.getElementById('purchased-pass').textContent = accountData.ffPassword;
             document.getElementById('credentials-modal').style.display = 'block';
         }
+
         // 🔥 DEPOSIT
         document.getElementById('deposit-btn').addEventListener('click', () => {
             document.getElementById('deposit-modal').style.display = 'block';
         });
+
         document.getElementById('submit-deposit-btn').addEventListener('click', () => {
             const name = document.getElementById('payer-name').value.trim();
             const utr = document.getElementById('utr-id').value.trim();
@@ -1055,7 +1329,9 @@
                 document.getElementById('deposit-amount').value = '';
             }).catch(err => { alert('Error: ' + err.message); });
         });
+
         console.log('🚀 HORIZON Loaded Successfully!');
+
         // 3D Animated Background Script (Simple Starfield with 3D Perspective)
         const canvas = document.getElementById('background-canvas');
         const ctx = canvas.getContext('2d');
