@@ -1001,6 +1001,7 @@
         let currentMediaSlides = [];
         let gifCompleted = false;
         let appLoaded = false;
+        let loadingFinished = false;
 
         // 🔥 LOADING SYSTEM
         function initLoading() {
@@ -1012,14 +1013,15 @@
                 loadingBar.style.width = `${progress}%`;
                 
                 // If both GIF completed and app loaded, finish loading
-                if (gifCompleted && appLoaded) {
+                if (gifCompleted && appLoaded && !loadingFinished) {
+                    loadingFinished = true;
                     clearInterval(progressInterval);
                     loadingBar.style.width = '100%';
                     setTimeout(() => {
                         loadingEl.style.opacity = '0';
                         setTimeout(() => {
                             loadingEl.style.display = 'none';
-                            authSection.classList.remove('hidden');
+                            // Let auth state listener handle which section to show
                         }, 500);
                     }, 500);
                 }
@@ -1030,9 +1032,7 @@
                 appLoaded = true;
             }, 1500);
             
-            // Detect when GIF completes (for GIFs that loop, we'll use a timeout)
-            // Since we can't reliably detect GIF completion, we'll use a timeout
-            // based on the typical length of the GIF
+            // Detect when GIF completes
             setTimeout(() => {
                 gifCompleted = true;
             }, 3000); // Assuming the GIF is about 3 seconds long
@@ -1044,24 +1044,28 @@
         // 🔥 AUTH STATE LISTENER
         onAuthStateChanged(auth, async (user) => {
             console.log('Auth state changed:', user ? 'Logged In' : 'Logged Out');
+            
+            // Wait for loading to complete before showing any content
+            if (!loadingFinished) {
+                const waitForLoading = setInterval(() => {
+                    if (loadingFinished) {
+                        clearInterval(waitForLoading);
+                        handleAuthState(user);
+                    }
+                }, 100);
+            } else {
+                handleAuthState(user);
+            }
+        });
+
+        function handleAuthState(user) {
             if (user) {
                 currentUser = user;
                 authSection.classList.add('hidden');
                 appSection.classList.remove('hidden');
                 
                 // Load user data including username
-                const userRef = ref(db, `users/${user.uid}`);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                
-                if (userData) {
-                    const displayText = userData.username ? 
-                        `@${userData.username} | ${user.email}` : user.email;
-                    userInfoEl.textContent = displayText;
-                } else {
-                    userInfoEl.textContent = user.email;
-                }
-                
+                loadUserData(user);
                 listenToWallet();
                 listenToSettings();
                 loadAccounts();
@@ -1071,7 +1075,21 @@
                 authSection.classList.remove('hidden');
                 appSection.classList.add('hidden');
             }
-        });
+        }
+
+        async function loadUserData(user) {
+            const userRef = ref(db, `users/${user.uid}`);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+            
+            if (userData) {
+                const displayText = userData.username ? 
+                    `@${userData.username} | ${user.email}` : user.email;
+                userInfoEl.textContent = displayText;
+            } else {
+                userInfoEl.textContent = user.email;
+            }
+        }
 
         // 🔥 LOGIN
         document.getElementById('login-btn').addEventListener('click', async () => {
